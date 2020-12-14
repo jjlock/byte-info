@@ -1,7 +1,7 @@
 package scraper
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -23,8 +23,8 @@ func ScrapeProfile(username string) (*User, error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
-		err := fmt.Errorf("status code error: %d %s", res.StatusCode, res.Status)
-		return nil, err
+		err := errors.New("byte.co responded with HTTP status: " + res.Status)
+		return nil, NewRequestError(res.StatusCode, err)
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
