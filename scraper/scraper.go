@@ -3,21 +3,23 @@ package scraper
 import (
 	"errors"
 	"net/http"
-	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-type User struct {
-	Username        string `json:"username"`
-	ProfileImageURL string `json:"profile_image_url"`
-	Description     string `json:"description"`
-	URL             string `json:"url"`
+type Scraper struct {
+	client *http.Client
 }
 
-func ScrapeProfile(username string) (*User, error) {
-	url := "https://byte.co/@" + username
-	res, err := http.Get(url)
+func NewScraper() *Scraper {
+	return &Scraper{
+		client: &http.Client{Timeout: 10 * time.Second},
+	}
+}
+
+func (s *Scraper) scrape(url string) (*goquery.Document, error) {
+	res, err := s.client.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -32,13 +34,5 @@ func ScrapeProfile(username string) (*User, error) {
 		return nil, err
 	}
 
-	user := &User{URL: url}
-
-	sel := doc.Find(".author")
-
-	user.Username = strings.TrimSpace(sel.Find(".username").Text())
-	user.ProfileImageURL, _ = sel.Find(".avatar").Attr("src")
-	user.Description = sel.Find(".bio").Text()
-
-	return user, nil
+	return doc, nil
 }
