@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/jjlock/byte-info/scraper"
+	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
 func GetUser(w http.ResponseWriter, r *http.Request) {

@@ -1,4 +1,4 @@
-module github.com/jjlock/byte-info
+module github.com/jjlock/byte-scraper-api
 
 go 1.13
 
