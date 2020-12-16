@@ -11,10 +11,10 @@ type User struct {
 	URL             string `json:"url"`
 }
 
-func (s *Scraper) ScrapeProfile(username string) (*User, error) {
+func (s *Scraper) GetUser(username string) (*User, error) {
 	url := "https://byte.co/@" + username
 
-	doc, err := s.scrape(url)
+	doc, err := s.get(url)
 	if err != nil {
 		return nil, err
 	}

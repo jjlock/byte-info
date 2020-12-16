@@ -18,7 +18,7 @@ func NewScraper() *Scraper {
 	}
 }
 
-func (s *Scraper) scrape(url string) (*goquery.Document, error) {
+func (s *Scraper) get(url string) (*goquery.Document, error) {
 	res, err := s.client.Get(url)
 	if err != nil {
 		return nil, err

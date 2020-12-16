@@ -11,7 +11,7 @@ func respondWithError(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(code)
 
-	errResponse := struct {
+	errorResponse := struct {
 		Status  int    `json:"status"`
 		Message string `json:"message"`
 	}{
@@ -19,7 +19,7 @@ func respondWithError(w http.ResponseWriter, code int, message string) {
 		Message: message,
 	}
 
-	err := json.NewEncoder(w).Encode(&errResponse)
+	err := json.NewEncoder(w).Encode(&errorResponse)
 	if err != nil {
 		log.Println(err)
 		return

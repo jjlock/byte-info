@@ -14,7 +14,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bytescraper := scraper.NewScraper()
 
-	user, err := bytescraper.ScrapeProfile(vars["username"])
+	user, err := bytescraper.GetUser(vars["username"])
 	if err != nil {
 		var requestError *scraper.RequestError
 		if errors.As(err, &requestError) {
