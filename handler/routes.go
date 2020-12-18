@@ -1,4 +1,4 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func (sh *scraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	bytescraper := scraper.NewScraper()
 
