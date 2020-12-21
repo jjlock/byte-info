@@ -1,7 +1,6 @@
 package scraper
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -30,8 +29,7 @@ func (s *Scraper) get(url string) (*goquery.Document, error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		err := errors.New("byte.co responded with HTTP status: " + res.Status)
-		return nil, NewRequestError(res.StatusCode, err)
+		return nil, NewRequestError(res.StatusCode, "byte.co responded with HTTP status: "+res.Status)
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
