@@ -1,6 +1,7 @@
 package scraper
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -16,7 +17,7 @@ func (s *Scraper) GetUser(username string) (*User, error) {
 
 	doc, err := s.get(url)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Unable to get user: %w", err)
 	}
 
 	user := &User{URL: url}

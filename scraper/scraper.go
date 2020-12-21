@@ -2,6 +2,7 @@ package scraper
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -21,7 +22,7 @@ func NewScraper() *Scraper {
 func (s *Scraper) get(url string) (*goquery.Document, error) {
 	res, err := s.client.Get(url)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%v", err)
 	}
 	defer res.Body.Close()
 	if res.StatusCode != 200 {
@@ -31,7 +32,7 @@ func (s *Scraper) get(url string) (*goquery.Document, error) {
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%v", err)
 	}
 
 	return doc, nil

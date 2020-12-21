@@ -15,7 +15,8 @@ func (sh *scraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var requestError *scraper.RequestError
 		if errors.As(err, &requestError) {
-			respondError(w, requestError.StatusCode, requestError.Error())
+			message := "Unable to get user: " + requestError.Error()
+			respondError(w, requestError.StatusCode, message)
 		} else {
 			respondInternalError(w)
 		}
