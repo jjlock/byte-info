@@ -21,7 +21,7 @@ func NewScraper() *Scraper {
 	}
 }
 
-// get sends a GET request to the specifed url.
+// get sends a GET request to the specifed url and returns a goquery.Document.
 // A RequestError is returned on a non-200 response.
 func (s *Scraper) get(url string) (*goquery.Document, error) {
 	res, err := s.client.Get(url)

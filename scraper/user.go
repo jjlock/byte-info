@@ -13,7 +13,7 @@ type User struct {
 	URL             string `json:"url"`
 }
 
-// GetUser gets a user by their username
+// GetUser returns scraped user data given a username
 func (s *Scraper) GetUser(username string) (*User, error) {
 	url := "https://byte.co/@" + username
 
