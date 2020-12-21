@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// User represents a byte user
 type User struct {
 	Username        string `json:"username"`
 	ProfileImageURL string `json:"profile_image_url"`
@@ -12,6 +13,7 @@ type User struct {
 	URL             string `json:"url"`
 }
 
+// GetUser gets a user by their username
 func (s *Scraper) GetUser(username string) (*User, error) {
 	url := "https://byte.co/@" + username
 

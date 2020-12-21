@@ -7,13 +7,17 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
-type scraperHandler struct {
+// ScraperHandler implements the http.Handler interface
+// and represents the server's dependencies
+type ScraperHandler struct {
 	scraper *scraper.Scraper
 	router  *mux.Router
 }
 
-func NewScraperHandler() *scraperHandler {
-	handler := &scraperHandler{
+// NewScraperHandler creates a new ScraperHandler instance
+// with all the routes registered to the router
+func NewScraperHandler() *ScraperHandler {
+	handler := &ScraperHandler{
 		scraper: scraper.NewScraper(),
 		router:  mux.NewRouter(),
 	}
@@ -23,11 +27,13 @@ func NewScraperHandler() *scraperHandler {
 	return handler
 }
 
-func (sh *scraperHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+// ServeHTTP wraps the router's ServeHTTP method
+func (sh *ScraperHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sh.router.ServeHTTP(w, r)
 }
 
-func (sh *scraperHandler) routes() {
+// routes registers the routes to the router
+func (sh *ScraperHandler) routes() {
 	subrouter := sh.router.PathPrefix("/api").Methods("GET").Subrouter()
 
 	// Routes

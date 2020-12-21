@@ -8,7 +8,8 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
-func (sh *scraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
+// getUser gets a user by their username
+func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	user, err := sh.scraper.GetUser(vars["username"])

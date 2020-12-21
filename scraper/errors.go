@@ -1,5 +1,6 @@
 package scraper
 
+// RequestError represents a non-200 response
 type RequestError struct {
 	StatusCode int
 	Err        error
