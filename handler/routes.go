@@ -26,3 +26,21 @@ func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 
 	respond(w, user, http.StatusOK)
 }
+
+func (sh *ScraperHandler) getByte(w http.ResponseWriter, r *http.Request) {
+	url := r.FormValue("url")
+
+	byte, err := sh.scraper.GetByte(url)
+	if err != nil {
+		var requestError *scraper.RequestError
+		if errors.As(err, &requestError) {
+			message := "Unable to get byte: " + requestError.Error()
+			respondError(w, requestError.StatusCode, message)
+		} else {
+			respondInternalError(w)
+		}
+		return
+	}
+
+	respond(w, byte, http.StatusOK)
+}

@@ -26,6 +26,7 @@ func NewScraper() *Scraper {
 // A RequestError is returned on a non-200 response.
 func (s *Scraper) get(url string) (*goquery.Document, error) {
 	if !isByteURL(url) {
+		fmt.Println("invalid url")
 		return nil, errors.New("Invalid URL")
 	}
 
