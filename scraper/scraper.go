@@ -1,8 +1,10 @@
 package scraper
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -23,6 +25,10 @@ func NewScraper() *Scraper {
 // get sends a GET request to the specifed url and returns a goquery.Document.
 // A RequestError is returned on a non-200 response.
 func (s *Scraper) get(url string) (*goquery.Document, error) {
+	if !isByteURL(url) {
+		return nil, errors.New("Invalid URL")
+	}
+
 	res, err := s.client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
@@ -38,4 +44,9 @@ func (s *Scraper) get(url string) (*goquery.Document, error) {
 	}
 
 	return doc, nil
+}
+
+func isByteURL(reqURL string) bool {
+	u, err := url.ParseRequestURI(reqURL)
+	return err == nil && u.Scheme == "https" && u.Host == "byte.co"
 }
