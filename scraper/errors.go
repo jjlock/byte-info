@@ -6,6 +6,7 @@ type RequestError struct {
 	Message    string
 }
 
+// NewRequestError creates a new RequestError instance
 func NewRequestError(code int, message string) *RequestError {
 	return &RequestError{code, message}
 }
