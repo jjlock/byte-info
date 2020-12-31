@@ -1,25 +1,23 @@
 package handler
 
 import (
-	"errors"
+	"log"
 	"net/http"
+	"regexp"
 
 	"github.com/gorilla/mux"
-	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
 // getUser gets a user by their username
 func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
 	user, err := sh.scraper.GetUser(vars["username"])
 	if err != nil {
-		var requestError *scraper.RequestError
-		if errors.As(err, &requestError) {
-			message := "Unable to get user: " + requestError.Error()
-			respondError(w, requestError.StatusCode, message)
+		if isErrNotFound(err) {
+			message := "User not found. User either does not exist or does exist but has not made a post."
+			respondError(w, http.StatusNotFound, message)
 		} else {
-			respondInternalError(w)
+			handleError(w, err)
 		}
 		return
 	}
@@ -27,17 +25,26 @@ func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	respond(w, user, http.StatusOK)
 }
 
+// getByte gets a byte by a url
 func (sh *ScraperHandler) getByte(w http.ResponseWriter, r *http.Request) {
 	url := r.FormValue("url")
+	matched, err := regexp.MatchString(`^https://byte\.co/.+/.+$`, url)
+	if err != nil {
+		log.Printf("handler: %v", err)
+		respondInternalServerError(w)
+		return
+	}
+	if !matched {
+		respondError(w, http.StatusBadRequest, "Invalid URL. The URL must link to a byte.")
+		return
+	}
 
 	byte, err := sh.scraper.GetByte(url)
 	if err != nil {
-		var requestError *scraper.RequestError
-		if errors.As(err, &requestError) {
-			message := "Unable to get byte: " + requestError.Error()
-			respondError(w, requestError.StatusCode, message)
+		if isErrNotFound(err) {
+			respondError(w, http.StatusNotFound, "Byte not found")
 		} else {
-			respondInternalError(w)
+			handleError(w, err)
 		}
 		return
 	}
