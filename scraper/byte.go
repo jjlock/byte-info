@@ -10,9 +10,11 @@ import (
 // Byte represents a post (called a byte)
 type Byte struct {
 	User      string `json:"user"`
+	UserURL   string `json:"user_url"`
 	Caption   string `json:"caption"`
 	CreatedAt string `json:"created_at"`
 	Loops     int    `json:"loops"`
+	URL       string `json:"url"`
 }
 
 // GetByte returns scraped data on a byte given a url to the byte
@@ -28,9 +30,13 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 
 	sel := doc.Find("#desktop div:not([class])")
 
-	byte := &Byte{}
+	byte := &Byte{URL: url}
 
 	byte.User = sel.Find(".username a").Text()
+
+	href, _ := sel.Find(".username a").Attr("href")
+	byte.UserURL = "https://byte.co" + href
+
 	byte.Caption = sel.Find(".post-content").Text()
 	byte.CreatedAt = sel.Find(".avatar-wrapper div:not([class])").Text()
 
