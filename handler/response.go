@@ -17,7 +17,7 @@ func respond(w http.ResponseWriter, data interface{}, statusCode int) {
 
 	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
-		log.Println("handler: failed to send response: ", err)
+		log.Printf("handler: failed to send response: %v", err)
 		return
 	}
 }
