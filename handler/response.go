@@ -23,14 +23,14 @@ func respond(w http.ResponseWriter, data interface{}, statusCode int) {
 }
 
 // handleError determines the appropriate error response to send based on the given error
-func handleError(w http.ResponseWriter, e error) {
-	if e == nil {
+func handleError(w http.ResponseWriter, err error) {
+	if err == nil {
 		log.Println("handler: no error to send as an error response")
 		return
 	}
 
 	var rerr *scraper.RequestError
-	if errors.As(e, &rerr) {
+	if errors.As(err, &rerr) {
 		switch {
 		case rerr.StatusCode >= 400 && rerr.StatusCode < 500:
 			log.Printf("handler: %s", rerr.Error())
@@ -42,7 +42,7 @@ func handleError(w http.ResponseWriter, e error) {
 			respondInternalServerError(w)
 		}
 	} else {
-		log.Printf("handler: %v", e)
+		log.Printf("handler: %v", err)
 		respondInternalServerError(w)
 	}
 }
@@ -65,10 +65,4 @@ func respondError(w http.ResponseWriter, statusCode int, message string) {
 func respondInternalServerError(w http.ResponseWriter) {
 	message := "Sorry, something went wrong on our side and we currently cannot handle the request."
 	respondError(w, http.StatusInternalServerError, message)
-}
-
-// isErrNotFound returns true if byte.co responded with a HTTP 404 status code
-func isErrNotFound(e error) bool {
-	var rerr *scraper.RequestError
-	return e != nil && errors.As(e, &rerr) && rerr.StatusCode == http.StatusNotFound
 }

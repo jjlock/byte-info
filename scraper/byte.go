@@ -1,7 +1,6 @@
 package scraper
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -22,7 +21,7 @@ type Byte struct {
 // GetByte returns scraped data on a byte given a URL to the byte
 func (s *Scraper) GetByte(url string) (*Byte, error) {
 	if !s.isValidURL(url) {
-		return nil, errors.New("Invalid URL")
+		return nil, errInvalidURL
 	}
 
 	doc, err := s.get(url)
@@ -52,8 +51,8 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 	return byte, nil
 }
 
-// isValidURL returns true if the given URL matches the scheme and
-// host of the Scraper's baseURL and is a link to a byte.
+// isValidURL checks if the given URL matches the scheme and host
+// of the Scraper's baseURL and is a link to a byte.
 // The given URL must be an absolute url.
 func (s *Scraper) isValidURL(rawurl string) bool {
 	ubase, err := url.ParseRequestURI(s.baseURL)
