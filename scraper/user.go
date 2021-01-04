@@ -16,7 +16,7 @@ type User struct {
 
 // GetUser returns scraped user data given a username
 func (s *Scraper) GetUser(username string) (*User, error) {
-	url := "https://byte.co/@" + username
+	url := s.baseURL + "/@" + username
 
 	doc, err := s.get(url)
 	if err != nil {
@@ -36,7 +36,7 @@ func (s *Scraper) GetUser(username string) (*User, error) {
 	for i := 0; i < len(sel.Nodes); i++ {
 		single := sel.Eq(i)
 		href, _ := single.Find("a").Attr("href")
-		user.RecentByteURLs = append(user.RecentByteURLs, "https://byte.co"+href)
+		user.RecentByteURLs = append(user.RecentByteURLs, s.baseURL+href)
 	}
 
 	return user, nil

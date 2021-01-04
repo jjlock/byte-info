@@ -1,10 +1,8 @@
 package scraper
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -12,23 +10,22 @@ import (
 
 // Scraper represents the scraper instance for scraping the byte website
 type Scraper struct {
-	client *http.Client
+	baseURL string
+	client  *http.Client
 }
 
 // NewScraper creates a new Scraper instance
 func NewScraper() *Scraper {
 	return &Scraper{
-		client: &http.Client{Timeout: 10 * time.Second},
+		baseURL: "https://byte.co",
+		client:  &http.Client{Timeout: 10 * time.Second},
 	}
 }
 
-// get sends a GET request to the specifed url and returns a goquery.Document.
-// A RequestError is returned on a non-200 response.
+// get sends a GET request to the specifed url.
+// A RequestError is returned on a non-200 response, otherwise it returns
+// any error returned from sending the request or creating the goquery.Document
 func (s *Scraper) get(url string) (*goquery.Document, error) {
-	if !isByteURL(url) {
-		return nil, errors.New("Invalid URL")
-	}
-
 	res, err := s.client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("%v", err)
@@ -44,9 +41,4 @@ func (s *Scraper) get(url string) (*goquery.Document, error) {
 	}
 
 	return doc, nil
-}
-
-func isByteURL(reqURL string) bool {
-	u, err := url.ParseRequestURI(reqURL)
-	return err == nil && u.Scheme == "https" && u.Host == "byte.co"
 }

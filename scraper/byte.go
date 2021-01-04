@@ -3,6 +3,8 @@ package scraper
 import (
 	"errors"
 	"fmt"
+	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -17,15 +19,15 @@ type Byte struct {
 	URL       string `json:"url"`
 }
 
-// GetByte returns scraped data on a byte given a url to the byte
+// GetByte returns scraped data on a byte given a URL to the byte
 func (s *Scraper) GetByte(url string) (*Byte, error) {
+	if !s.isValidURL(url) {
+		return nil, errors.New("Invalid URL")
+	}
+
 	doc, err := s.get(url)
 	if err != nil {
 		return nil, fmt.Errorf("Unable to get byte: %w", err)
-	}
-
-	if sel := doc.Find("#post"); !sel.Is("#post") {
-		return nil, errors.New("The URL is not a link to a byte")
 	}
 
 	sel := doc.Find("#desktop div:not([class])")
@@ -35,7 +37,7 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 	byte.User = sel.Find(".username a").Text()
 
 	href, _ := sel.Find(".username a").Attr("href")
-	byte.UserURL = "https://byte.co" + href
+	byte.UserURL = s.baseURL + href
 
 	byte.Caption = sel.Find(".post-content").Text()
 	byte.CreatedAt = sel.Find(".avatar-wrapper div:not([class])").Text()
@@ -48,4 +50,24 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 	}
 
 	return byte, nil
+}
+
+// isValidURL returns true if the given URL matches the scheme and
+// host of the Scraper's baseURL and is a link to a byte.
+// The given URL must be an absolute url.
+func (s *Scraper) isValidURL(rawurl string) bool {
+	ubase, err := url.ParseRequestURI(s.baseURL)
+	if err != nil {
+		return false
+	}
+	u, err := url.ParseRequestURI(rawurl)
+	if err != nil {
+		return false
+	}
+	matched, err := regexp.MatchString(`^/@?[0-9A-Za-z]+/[0-9A-Za-z]+$`, u.Path)
+	if err != nil {
+		return false
+	}
+
+	return ubase.Scheme == u.Scheme && ubase.Host == u.Host && matched
 }
