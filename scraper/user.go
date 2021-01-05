@@ -17,7 +17,7 @@ type User struct {
 // A RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
 func (s *Scraper) GetUser(username string) (*User, error) {
-	url := s.baseURL + "/@" + username
+	url := ByteBaseURL + "/@" + username
 
 	doc, err := s.get(url)
 	if err != nil {
@@ -37,7 +37,7 @@ func (s *Scraper) GetUser(username string) (*User, error) {
 	for i := 0; i < len(sel.Nodes); i++ {
 		single := sel.Eq(i)
 		href, _ := single.Find("a").Attr("href")
-		user.RecentByteURLs = append(user.RecentByteURLs, s.baseURL+href)
+		user.RecentByteURLs = append(user.RecentByteURLs, ByteBaseURL+href)
 	}
 
 	return user, nil

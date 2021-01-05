@@ -8,18 +8,18 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// ByteBaseURL is the base URL of the byte website.
+// It is used by the scraper to construct URLs for scraping data.
+const ByteBaseURL = "https://byte.co"
+
 // Scraper represents the scraper instance for scraping the byte website
 type Scraper struct {
-	baseURL string
-	client  *http.Client
+	client *http.Client
 }
 
 // NewScraper creates a new Scraper instance
 func NewScraper() *Scraper {
-	return &Scraper{
-		baseURL: "https://byte.co",
-		client:  &http.Client{Timeout: 10 * time.Second},
-	}
+	return &Scraper{client: &http.Client{Timeout: 10 * time.Second}}
 }
 
 // get sends a GET request to the specifed url.

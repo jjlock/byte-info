@@ -19,9 +19,9 @@ type Byte struct {
 }
 
 // GetByte returns scraped data on a byte given a URL to the byte.
+// An InvalidURLError is returned if the given URL is not a link to a byte.
 // A RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
-// An InvalidURLError is returned if the given URL is not a link to a byte.
 func (s *Scraper) GetByte(url string) (*Byte, error) {
 	if !s.isValidURL(url) {
 		return nil, &InvalidURLError{Reason: url + " is not a link to a byte"}
@@ -39,7 +39,7 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 	byte.User = sel.Find(".username a").Text()
 
 	href, _ := sel.Find(".username a").Attr("href")
-	byte.UserURL = s.baseURL + href
+	byte.UserURL = ByteBaseURL + href
 
 	byte.Caption = sel.Find(".post-content").Text()
 	byte.CreatedAt = sel.Find(".avatar-wrapper div:not([class])").Text()
@@ -56,7 +56,7 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 
 // isValidURL checks if the given URL is a link to a byte
 func (s *Scraper) isValidURL(rawurl string) bool {
-	ubase, err := url.ParseRequestURI(s.baseURL)
+	ubase, err := url.ParseRequestURI(ByteBaseURL)
 	if err != nil {
 		return false
 	}
