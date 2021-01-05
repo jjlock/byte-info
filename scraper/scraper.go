@@ -24,20 +24,23 @@ func NewScraper() *Scraper {
 
 // get sends a GET request to the specifed url.
 // A RequestError is returned on a non-200 response, otherwise it returns
-// any error returned from sending the request or creating the goquery.Document
+// any error returned from sending the request or parsing the response.
 func (s *Scraper) get(url string) (*goquery.Document, error) {
 	res, err := s.client.Get(url)
 	if err != nil {
-		return nil, fmt.Errorf("%v", err)
+		return nil, err
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		return nil, NewRequestError(res.StatusCode, "byte.co responded with HTTP status: "+res.Status)
+		return nil, &RequestError{
+			StatusCode: res.StatusCode,
+			Message:    "byte.co responded with HTTP status: " + res.Status,
+		}
 	}
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("%v", err)
+		return nil, fmt.Errorf("Unable to read response: %v", err)
 	}
 
 	return doc, nil

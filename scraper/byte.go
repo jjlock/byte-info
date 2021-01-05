@@ -18,15 +18,18 @@ type Byte struct {
 	URL       string `json:"url"`
 }
 
-// GetByte returns scraped data on a byte given a URL to the byte
+// GetByte returns scraped data on a byte given a URL to the byte.
+// A RequestError is returned on a non-200 response, otherwise it returns
+// any error returned from sending the request or parsing the response.
+// An InvalidURLError is returned if the given URL is not a link to a byte.
 func (s *Scraper) GetByte(url string) (*Byte, error) {
 	if !s.isValidURL(url) {
-		return nil, errInvalidURL
+		return nil, &InvalidURLError{Reason: url + " is not a link to a byte"}
 	}
 
 	doc, err := s.get(url)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to get byte: %w", err)
+		return nil, err
 	}
 
 	sel := doc.Find("#desktop div:not([class])")
@@ -45,15 +48,13 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 	loops := strings.ReplaceAll(loopsText, ",", "")
 	byte.Loops, err = strconv.Atoi(loops)
 	if err != nil {
-		return nil, fmt.Errorf("Could not convert loops text to int: %v", err)
+		return nil, fmt.Errorf("Unable to parse response: %v", err)
 	}
 
 	return byte, nil
 }
 
-// isValidURL checks if the given URL matches the scheme and host
-// of the Scraper's baseURL and is a link to a byte.
-// The given URL must be an absolute url.
+// isValidURL checks if the given URL is a link to a byte
 func (s *Scraper) isValidURL(rawurl string) bool {
 	ubase, err := url.ParseRequestURI(s.baseURL)
 	if err != nil {
