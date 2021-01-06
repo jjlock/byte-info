@@ -23,6 +23,11 @@ func NewScraper() *Scraper {
 	return &Scraper{client: &http.Client{Timeout: 10 * time.Second}}
 }
 
+// SetClient replaces the currently set http.Client
+func (s *Scraper) SetClient(client *http.Client) {
+	s.client = client
+}
+
 // get sends a GET request to the specifed url.
 // A RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
