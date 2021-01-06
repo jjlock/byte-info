@@ -1,3 +1,4 @@
+// Package handler provides a http.Handler that handles requests to scrape the byte website
 package handler
 
 import (

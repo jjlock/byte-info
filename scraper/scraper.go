@@ -1,3 +1,4 @@
+// Package scraper implements a framework for scraping the byte website
 package scraper
 
 import (
