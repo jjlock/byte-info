@@ -10,7 +10,7 @@ import (
 )
 
 // respond sends a response with the given data and HTTP status code in JSON
-func respond(w http.ResponseWriter, data interface{}, statusCode int) {
+func respond(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(statusCode)
@@ -57,7 +57,7 @@ func respondError(w http.ResponseWriter, statusCode int, message string) {
 		Message: message,
 	}
 
-	respond(w, &errorResponse, statusCode)
+	respond(w, statusCode, &errorResponse)
 }
 
 // respondInternalError can be used in place of respondError to send an error response

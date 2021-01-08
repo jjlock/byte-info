@@ -8,10 +8,10 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
-// ScraperHandler implements the http.Handler interface
-// and represents the server's dependencies
+// ScraperHandler implements the http.Handler interface and
+// handles request to scrape the byte website
 type ScraperHandler struct {
-	scraper *scraper.Scraper
+	scraper scraper.Scraper
 	router  *mux.Router
 }
 
@@ -19,7 +19,7 @@ type ScraperHandler struct {
 // with all the routes registered to the router
 func NewScraperHandler() *ScraperHandler {
 	handler := &ScraperHandler{
-		scraper: scraper.NewScraper(),
+		scraper: scraper.NewByteScraper(),
 		router:  mux.NewRouter(),
 	}
 

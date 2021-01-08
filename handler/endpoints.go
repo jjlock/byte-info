@@ -21,10 +21,10 @@ func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respond(w, user, http.StatusOK)
+	respond(w, http.StatusOK, user)
 }
 
-// getByte gets a byte by a url
+// getByte gets a byte by its ID
 func (sh *ScraperHandler) getByte(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
@@ -38,5 +38,5 @@ func (sh *ScraperHandler) getByte(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respond(w, byte, http.StatusOK)
+	respond(w, http.StatusOK, byte)
 }
