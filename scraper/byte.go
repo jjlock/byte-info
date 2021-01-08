@@ -29,9 +29,6 @@ func (s *Scraper) GetByte(id string) (*Byte, error) {
 	}
 
 	byte := &Byte{ID: id}
-
-	byte.ThumbnailURL, _ = doc.Find(`#vinit`).Attr("poster")
-
 	sel := doc.Find("#desktop div:not([class])")
 
 	byte.User = sel.Find(".username a").Text()
@@ -39,6 +36,7 @@ func (s *Scraper) GetByte(id string) (*Byte, error) {
 	href, _ := sel.Find(".username a").Attr("href")
 	byte.UserURL = ByteBaseURL + href
 
+	byte.ThumbnailURL, _ = doc.Find(`#vinit`).Attr("poster")
 	byte.Caption = sel.Find(".post-content").Text()
 	byte.CreatedAt = sel.Find(".avatar-wrapper div:not([class])").Text()
 

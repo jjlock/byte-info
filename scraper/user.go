@@ -8,7 +8,8 @@ import (
 type User struct {
 	Username        string   `json:"username"`
 	ProfileImageURL string   `json:"profile_image_url"`
-	Description     string   `json:"description"`
+	Bio             string   `json:"bio"`
+	RecentByteIDs   []string `json:"recent_byte_ids"`
 	RecentByteURLs  []string `json:"recent_byte_urls"`
 	URL             string   `json:"url"`
 }
@@ -18,25 +19,25 @@ type User struct {
 // any error returned from sending the request or parsing the response.
 func (s *Scraper) GetUser(username string) (*User, error) {
 	url := ByteBaseURL + "/@" + username
-
 	doc, err := s.get(url)
 	if err != nil {
 		return nil, err
 	}
 
 	user := &User{URL: url}
-
 	sel := doc.Find(".author")
 
 	user.Username = strings.TrimSpace(sel.Find(".username").Text())
 	user.ProfileImageURL, _ = sel.Find(".avatar").Attr("src")
-	user.Description = sel.Find(".bio").Text()
+	user.Bio = sel.Find(".bio").Text()
+	user.RecentByteIDs = make([]string, 0)
 	user.RecentByteURLs = make([]string, 0)
 
 	sel = doc.Find(".post")
 	for i := 0; i < len(sel.Nodes); i++ {
 		single := sel.Eq(i)
 		href, _ := single.Find("a").Attr("href")
+		user.RecentByteIDs = append(user.RecentByteIDs, strings.TrimPrefix(href, "/@"+user.Username+"/"))
 		user.RecentByteURLs = append(user.RecentByteURLs, ByteBaseURL+href)
 	}
 
