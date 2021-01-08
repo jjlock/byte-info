@@ -26,16 +26,13 @@ func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 
 // getByte gets a byte by a url
 func (sh *ScraperHandler) getByte(w http.ResponseWriter, r *http.Request) {
-	url := r.FormValue("url")
+	vars := mux.Vars(r)
 
-	byte, err := sh.scraper.GetByte(url)
+	byte, err := sh.scraper.GetByte(vars["id"])
 	if err != nil {
-		switch {
-		case scraper.IsErrInvalidURL(err):
-			respondError(w, http.StatusBadRequest, "Invalid URL. The URL must link to a byte.")
-		case scraper.IsStatusNotFound(err):
+		if scraper.IsStatusNotFound(err) {
 			respondError(w, http.StatusNotFound, "Byte not found")
-		default:
+		} else {
 			handleError(w, err)
 		}
 		return

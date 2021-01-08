@@ -2,39 +2,37 @@ package scraper
 
 import (
 	"fmt"
-	"net/url"
-	"regexp"
 	"strconv"
 	"strings"
 )
 
 // Byte represents a post (called a byte)
 type Byte struct {
-	User      string `json:"user"`
-	UserURL   string `json:"user_url"`
-	Caption   string `json:"caption"`
-	CreatedAt string `json:"created_at"`
-	Loops     int    `json:"loops"`
-	URL       string `json:"url"`
+	ID           string   `json:"id"`
+	User         string   `json:"user"`
+	UserURL      string   `json:"user_url"`
+	ThumbnailURL string   `json:"thumbnail_url"`
+	Caption      string   `json:"caption"`
+	CreatedAt    string   `json:"created_at"`
+	Loops        int      `json:"loops"`
+	URLs         []string `json:"urls"`
 }
 
-// GetByte returns scraped data on a byte given a URL to the byte.
-// An InvalidURLError is returned if the given URL is not a link to a byte.
+// GetByte returns scraped data of a byte given its ID.
 // A RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
-func (s *Scraper) GetByte(url string) (*Byte, error) {
-	if !s.isValidURL(url) {
-		return nil, &InvalidURLError{Reason: url + " is not a link to a byte"}
-	}
-
+func (s *Scraper) GetByte(id string) (*Byte, error) {
+	url := ByteBaseURL + "/b/" + id
 	doc, err := s.get(url)
 	if err != nil {
 		return nil, err
 	}
 
-	sel := doc.Find("#desktop div:not([class])")
+	byte := &Byte{ID: id}
 
-	byte := &Byte{URL: url}
+	byte.ThumbnailURL, _ = doc.Find(`#vinit`).Attr("poster")
+
+	sel := doc.Find("#desktop div:not([class])")
 
 	byte.User = sel.Find(".username a").Text()
 
@@ -51,23 +49,7 @@ func (s *Scraper) GetByte(url string) (*Byte, error) {
 		return nil, fmt.Errorf("Unable to parse response: %v", err)
 	}
 
+	byte.URLs = []string{byte.UserURL + "/" + id, url}
+
 	return byte, nil
-}
-
-// isValidURL checks if the given URL is a link to a byte
-func (s *Scraper) isValidURL(rawurl string) bool {
-	ubase, err := url.ParseRequestURI(ByteBaseURL)
-	if err != nil {
-		return false
-	}
-	u, err := url.ParseRequestURI(rawurl)
-	if err != nil {
-		return false
-	}
-	matched, err := regexp.MatchString(`^/@?[0-9A-Za-z]+/[0-9A-Za-z]+$`, u.Path)
-	if err != nil {
-		return false
-	}
-
-	return ubase.Scheme == u.Scheme && ubase.Host == u.Host && matched
 }

@@ -39,5 +39,5 @@ func (sh *ScraperHandler) routes() {
 
 	// Routes
 	subrouter.HandleFunc("/users/{username}", sh.getUser)
-	subrouter.HandleFunc("/bytes", sh.getByte).Queries("url", "")
+	subrouter.HandleFunc("/bytes/{id}", sh.getByte)
 }
