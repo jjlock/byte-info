@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Byte represents a post (called a byte)
+// Byte represents a post (called a byte).
 type Byte struct {
 	ID           string   `json:"id"`
 	User         string   `json:"user"`
@@ -19,9 +19,9 @@ type Byte struct {
 }
 
 // GetByte returns scraped data of a byte given its ID.
-// A RequestError is returned on a non-200 response, otherwise it returns
+// RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
-func (s *ByteScraper) GetByte(id string) (*Byte, error) {
+func (s *Scraper) GetByte(id string) (*Byte, error) {
 	url := ByteBaseURL + "/b/" + id
 	doc, err := s.get(url)
 	if err != nil {
@@ -44,7 +44,7 @@ func (s *ByteScraper) GetByte(id string) (*Byte, error) {
 	loops := strings.ReplaceAll(loopsText, ",", "")
 	byte.Loops, err = strconv.Atoi(loops)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to parse response: %v", err)
+		return nil, fmt.Errorf("unable to parse response: %v", err)
 	}
 
 	byte.URLs = []string{byte.UserURL + "/" + id, url}

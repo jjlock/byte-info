@@ -1,4 +1,4 @@
-// Package scraper implements a framework for scraping the byte website
+// Package scraper implements a framework for scraping the byte website.
 package scraper
 
 import (
@@ -13,26 +13,25 @@ import (
 // It is used by a Scraper to construct URLs for scraping data.
 const ByteBaseURL = "https://byte.co"
 
-// ByteScraper implements the Scraper interface and represents the
-// instance used for scraping the byte website
-type ByteScraper struct {
+// Scraper represents the instance used for scraping the byte website.
+type Scraper struct {
 	client *http.Client
 }
 
-// NewByteScraper creates a new ByteScraper instance
-func NewByteScraper() *ByteScraper {
-	return &ByteScraper{client: &http.Client{Timeout: 10 * time.Second}}
+// NewScraper creates a new Scraper instance.
+func NewScraper() *Scraper {
+	return &Scraper{client: &http.Client{Timeout: 10 * time.Second}}
 }
 
-// NewCustomByteScraper creates a new ByteScraper instance with the given http.Client
-func NewCustomByteScraper(c *http.Client) *ByteScraper {
-	return &ByteScraper{client: c}
+// NewCustomScraper creates a new Scraper instance with the given http.Client.
+func NewCustomScraper(c *http.Client) *Scraper {
+	return &Scraper{client: c}
 }
 
 // get sends a GET request to the specifed url.
-// A RequestError is returned on a non-200 response, otherwise it returns
+// RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
-func (s *ByteScraper) get(url string) (*goquery.Document, error) {
+func (s *Scraper) get(url string) (*goquery.Document, error) {
 	resp, err := s.client.Get(url)
 	if err != nil {
 		return nil, err
@@ -47,7 +46,7 @@ func (s *ByteScraper) get(url string) (*goquery.Document, error) {
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to read response: %v", err)
+		return nil, fmt.Errorf("unable to read response: %v", err)
 	}
 
 	return doc, nil

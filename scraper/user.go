@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-// User represents a byte user
+// User represents a byte user.
 type User struct {
 	Username        string   `json:"username"`
 	ProfileImageURL string   `json:"profile_image_url"`
@@ -15,9 +15,9 @@ type User struct {
 }
 
 // GetUser returns scraped user data given a username.
-// A RequestError is returned on a non-200 response, otherwise it returns
+// RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
-func (s *ByteScraper) GetUser(username string) (*User, error) {
+func (s *Scraper) GetUser(username string) (*User, error) {
 	url := ByteBaseURL + "/@" + username
 	doc, err := s.get(url)
 	if err != nil {
@@ -30,8 +30,8 @@ func (s *ByteScraper) GetUser(username string) (*User, error) {
 	user.Username = strings.TrimSpace(sel.Find(".username").Text())
 	user.ProfileImageURL, _ = sel.Find(".avatar").Attr("src")
 	user.Bio = sel.Find(".bio").Text()
-	user.RecentByteIDs = make([]string, 0)
-	user.RecentByteURLs = make([]string, 0)
+	user.RecentByteIDs = []string{}
+	user.RecentByteURLs = []string{}
 
 	sel = doc.Find(".post")
 	for i := 0; i < len(sel.Nodes); i++ {

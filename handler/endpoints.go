@@ -7,7 +7,7 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
-// getUser gets a user by their username
+// getUser handles getting a user by their username.
 func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	user, err := sh.scraper.GetUser(vars["username"])
@@ -24,14 +24,14 @@ func (sh *ScraperHandler) getUser(w http.ResponseWriter, r *http.Request) {
 	respond(w, http.StatusOK, user)
 }
 
-// getByte gets a byte by its ID
+// getByte handles getting a byte by its ID.
 func (sh *ScraperHandler) getByte(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	byte, err := sh.scraper.GetByte(vars["id"])
 	if err != nil {
 		if scraper.IsStatusNotFound(err) {
-			respondError(w, http.StatusNotFound, "Byte not found")
+			respondError(w, http.StatusNotFound, "Byte not found.")
 		} else {
 			handleError(w, err)
 		}
