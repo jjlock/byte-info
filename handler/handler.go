@@ -11,7 +11,7 @@ import (
 // ScraperHandler implements the http.Handler interface and
 // handles request to scrape the byte website
 type ScraperHandler struct {
-	scraper scraper.Scraper
+	scraper *scraper.ByteScraper
 	router  *mux.Router
 }
 

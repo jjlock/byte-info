@@ -13,13 +13,6 @@ import (
 // It is used by a Scraper to construct URLs for scraping data.
 const ByteBaseURL = "https://byte.co"
 
-// Scraper is an interface representing the abilty to scrape the byte
-// website for data
-type Scraper interface {
-	GetUser(username string) (*User, error)
-	GetByte(id string) (*Byte, error)
-}
-
 // ByteScraper implements the Scraper interface and represents the
 // instance used for scraping the byte website
 type ByteScraper struct {
