@@ -15,7 +15,7 @@ type User struct {
 }
 
 // GetUser returns scraped user data given a username.
-// RequestError is returned on a non-200 response, otherwise it returns
+// *RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
 func (s *Scraper) GetUser(username string) (*User, error) {
 	url := ByteBaseURL + "/@" + username

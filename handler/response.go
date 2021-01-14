@@ -9,6 +9,11 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
+type errorResponse struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
 // respond sends a response with the given data and HTTP status code in JSON.
 func respond(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
@@ -17,7 +22,7 @@ func respond(w http.ResponseWriter, statusCode int, data interface{}) {
 
 	err := json.NewEncoder(w).Encode(data)
 	if err != nil {
-		log.Printf("handler: failed to send response: %v", err)
+		log.Printf("Failed to send response: %v", err)
 		return
 	}
 }
@@ -25,7 +30,7 @@ func respond(w http.ResponseWriter, statusCode int, data interface{}) {
 // handleError determines the appropriate error response to send based on the given error.
 func handleError(w http.ResponseWriter, err error) {
 	if err == nil {
-		log.Println("handler: no error to send as an error response")
+		log.Println("No error to send as an error response")
 		return
 	}
 
@@ -33,37 +38,28 @@ func handleError(w http.ResponseWriter, err error) {
 	if errors.As(err, &rerr) {
 		switch {
 		case rerr.StatusCode >= 400 && rerr.StatusCode < 500:
-			log.Printf("handler: %s", rerr.Error())
+			log.Println("byte.co responded with HTTP status: " + http.StatusText(rerr.StatusCode))
 			respondInternalServerError(w)
 		case rerr.StatusCode >= 500:
-			respondError(w, http.StatusServiceUnavailable, "byte.co is currently unavailable.")
+			respondError(w, 503, "byte.co is currently unavailable.")
 		default:
-			log.Printf("handler: byte.co responded with an unexpected HTTP status code: %d", rerr.StatusCode)
+			log.Printf("byte.co responded with an unexpected HTTP status code: %d", rerr.StatusCode)
 			respondInternalServerError(w)
 		}
 		return
 	}
 
-	log.Printf("handler: %v", err)
+	log.Printf("Could not handle response from byte.co: %v", err)
 	respondInternalServerError(w)
 }
 
 // respondError sends an error response with the given HTTP status code and message in JSON.
 func respondError(w http.ResponseWriter, statusCode int, message string) {
-	errorResponse := struct {
-		Status  int    `json:"status"`
-		Message string `json:"message"`
-	}{
-		Status:  statusCode,
-		Message: message,
-	}
-
-	respond(w, statusCode, errorResponse)
+	respond(w, statusCode, errorResponse{Status: statusCode, Message: message})
 }
 
-// respondInternalError can be used in place of respondError to send an error response
-// with a 500 HTTP status code.
+// respondInternalError can be used in place of respondError to send an error response with
+// a 500 HTTP status code and default message in JSON.
 func respondInternalServerError(w http.ResponseWriter) {
-	message := "Sorry, something went wrong on our side and we currently cannot handle the request."
-	respondError(w, http.StatusInternalServerError, message)
+	respond(w, 500, errorResponse{Status: 500, Message: "Sorry, something went wrong on our side and we currently cannot handle the request."})
 }

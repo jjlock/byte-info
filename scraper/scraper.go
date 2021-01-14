@@ -29,7 +29,7 @@ func NewCustomScraper(c *http.Client) *Scraper {
 }
 
 // get sends a GET request to the specifed url.
-// RequestError is returned on a non-200 response, otherwise it returns
+// *RequestError is returned on a non-200 response, otherwise it returns
 // any error returned from sending the request or parsing the response.
 func (s *Scraper) get(url string) (*goquery.Document, error) {
 	resp, err := s.client.Get(url)
@@ -37,7 +37,7 @@ func (s *Scraper) get(url string) (*goquery.Document, error) {
 		return nil, err
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != 200 {
 		return nil, &RequestError{
 			StatusCode: resp.StatusCode,
 			Message:    "byte.co responded with HTTP status: " + resp.Status,
