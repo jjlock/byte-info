@@ -8,16 +8,16 @@ import (
 	"github.com/jjlock/byte-scraper-api/scraper"
 )
 
-// Scraper represents the ability to scrape the byte website.
-type Scraper interface {
+// byteScraper represents the ability to scrape the byte website.
+type byteScraper interface {
 	GetUser(username string) (*scraper.User, error)
 	GetByte(id string) (*scraper.Byte, error)
 }
 
 // ScraperHandler implements the http.Handler interface and
-// handles request to scrape the byte website.
+// handles requests to scrape the byte website.
 type ScraperHandler struct {
-	scraper Scraper
+	scraper byteScraper
 	router  *mux.Router
 }
 
