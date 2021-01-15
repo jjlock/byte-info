@@ -21,26 +21,30 @@ func main() {
 		IdleTimeout:  15 * time.Second,
 	}
 
+	serverClosed := make(chan struct{})
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-	// start server in goroutine so it does not block
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Listen: %v", err)
+			log.Fatalf("Server ListenAndServe: %v", err)
 		}
+		close(serverClosed)
 	}()
-	log.Printf("Server started on localhost%s", srv.Addr)
+	log.Println("Server started on localhost" + srv.Addr)
 
 	<-done
-	log.Print("Server stopped")
+	log.Println("Server shutting down...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("Server shutdown failed: %v", err)
+		// defers are not called with os.Exit so call cancel here
+		cancel()
+		log.Printf("Server shutdown failed: %v", err)
 	}
 
-	log.Print("Server shutdown gracefully")
+	<-serverClosed
+	log.Println("Server shutdown gracefully")
 }
