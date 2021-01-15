@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -13,8 +14,11 @@ import (
 )
 
 func main() {
+	port := flag.String("port", "8000", "the port for the server to listen on")
+	flag.Parse()
+
 	srv := &http.Server{
-		Addr:         ":8000",
+		Addr:         ":" + *port,
 		Handler:      handler.NewScraperHandler(),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
