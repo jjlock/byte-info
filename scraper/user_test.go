@@ -2,9 +2,8 @@ package scraper
 
 import (
 	"errors"
+	"reflect"
 	"testing"
-
-	"github.com/matryer/is"
 )
 
 func TestGetUser(t *testing.T) {
@@ -23,8 +22,9 @@ func TestGetUser(t *testing.T) {
 		t.Errorf("GetUser should return a nil error but got: %v", err)
 	}
 
-	is := is.New(t)
-	is.Equal(got, expected)
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("\nGot: %#v\nWant: %#v", got, expected)
+	}
 }
 
 func TestGetUserNotFound(t *testing.T) {

@@ -2,9 +2,8 @@ package scraper
 
 import (
 	"errors"
+	"reflect"
 	"testing"
-
-	"github.com/matryer/is"
 )
 
 func TestGetByte(t *testing.T) {
@@ -25,8 +24,9 @@ func TestGetByte(t *testing.T) {
 		t.Errorf("GetByte should return a nil error but got: %v", err)
 	}
 
-	is := is.New(t)
-	is.Equal(got, expected)
+	if !reflect.DeepEqual(got, expected) {
+		t.Errorf("\nGot: %#v\nWant: %#v", got, expected)
+	}
 }
 
 func TestGetByteNotFound(t *testing.T) {

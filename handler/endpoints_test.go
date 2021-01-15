@@ -7,11 +7,11 @@ import (
 	"log"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/gorilla/mux"
 	"github.com/jjlock/byte-scraper-api/scraper"
-	"github.com/matryer/is"
 )
 
 func init() {
@@ -130,8 +130,9 @@ func testEndpoint(t *testing.T, sh *ScraperHandler, path string, expected, actua
 		t.Fatal(err)
 	}
 
-	is := is.New(t)
-	is.Equal(actual, expected)
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("\nGot: %#v\nWant: %#v", actual, expected)
+	}
 }
 
 // testErrors runs tests on a handler assuming a non-200 response from byte.co or any other errors
@@ -156,8 +157,8 @@ func testErrors(t *testing.T, sh *ScraperHandler, basepath string) {
 
 			checkHeader(t, resp)
 
-			actual := &errorResponse{}
-			if err := json.NewDecoder(resp.Body).Decode(actual); err != nil {
+			actual := errorResponse{}
+			if err := json.NewDecoder(resp.Body).Decode(&actual); err != nil {
 				t.Fatal(err)
 			}
 
